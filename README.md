@@ -6,7 +6,7 @@ Module to provide serial communication functionality.
 
 ## How to Run
 The app includes an intuitive GUI to setup the database.  
-For further information check out the [documentation](https://raw.githack.com/SICKAppSpaceCodingStarterKit/CSK_Module_MultiSerialCom/main/docu/CSK_Module_MultiSerialCom.html) in the folder "docu".  
+For further information check out the [documentation](https://raw.githack.com/golluroSICKAG/CSK_Module_MultiSerialCom/main/docu/CSK_Module_MultiSerialCom.html) in the folder "docu".  
 
 ## Information
 
