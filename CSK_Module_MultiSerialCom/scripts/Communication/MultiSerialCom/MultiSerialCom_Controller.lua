@@ -279,6 +279,8 @@ local function addInstance()
   table.insert(multiSerialCom_Instances, multiSerialCom_Model.create(#multiSerialCom_Instances+1))
   Script.deregister("CSK_MultiSerialCom.OnNewValueToForward" .. tostring(#multiSerialCom_Instances) , handleOnNewValueToForward)
   Script.register("CSK_MultiSerialCom.OnNewValueToForward" .. tostring(#multiSerialCom_Instances) , handleOnNewValueToForward)
+  Script.deregister("CSK_MultiSerialCom.OnNewValueUpdate" .. tostring(#multiSerialCom_Instances) , handleOnNewValueUpdate)
+  Script.register("CSK_MultiSerialCom.OnNewValueUpdate" .. tostring(#multiSerialCom_Instances) , handleOnNewValueUpdate)
   handleOnExpiredTmrMultiSerialCom()
 end
 Script.serveFunction('CSK_MultiSerialCom.addInstance', addInstance)
