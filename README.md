@@ -1,11 +1,11 @@
 # CSK_Module_MultiSerialCom
 
-Module to provide serial communication functionality.  
+Module to provide serial communication functionality on multiple instances.  
 
 ![](./docu/media/UI_Screenshot.png)
 
 ## How to Run
-The app includes an intuitive GUI to setup the database.  
+The app includes an intuitive GUI to setup the serial communication.  
 For further information check out the [documentation](https://raw.githack.com/golluroSICKAG/CSK_Module_MultiSerialCom/main/docu/CSK_Module_MultiSerialCom.html) in the folder "docu".  
 
 ## Information
