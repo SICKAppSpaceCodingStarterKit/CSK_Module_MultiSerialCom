@@ -6,16 +6,34 @@
         </crown>
         <crown name="CSK_MultiSerialCom">
             <trait>released</trait>
-            <desc>Please fill in information regarding: What is the idea of this module and its features? +
-How to use this module in general.... like: +
-{empty} + 
+            <desc>Module to provide SerialCom functionality. Multiple instances can be created and will run in multiple threads on the device. +
+This module provides a UI for all relevant features. +
+{empty} +
 Typically the features of this module are used like this (check also main script of this module): +
-{empty} + 
+{empty} +
 **1) Setup** +
-ToDo +
-{empty} + 
-**2) Something else....** +
-</desc>
+- If multiple instances are needed, these can be added via 'addInstance()' (not needed if you only use 1 single instace). +
+- Set instance to configure via 'setSelectedInstance' +
+- Make use of the 'set...' functions to configure the SerialCom interface. Make sure to select a valid interface via 'setInterface'. +
+- Via 'setActive' it is possible to activate the SerialCom port. +
+{empty} +
+INFO: With every change of the setup parameters it will reopen the connection if it was active. +
+{empty} +
+**2) Interaction** +
+Other modules can register on these events / trigger these functions: +
+{empty} +
+- 'OnNewDataNUM (see docu) +
+- 'receiveInstanceNUM' (see docu) +
+- 'transmitInstanceNUM' (see docu) +</desc>
+            <enum name="Frames" trait="released">
+                <desc>Available Rx/Tx framing.</desc>
+                <item desc="No framing." name="None">None</item>
+                <item desc="&lt;STX&gt; framing" name="STX">STX</item>
+                <item desc="&lt;ETX&gt; framing." name="ETX">ETX</item>
+                <item desc="&lt;LF&gt; framing." name="LF">LF</item>
+                <item desc="&lt;CR&gt; framing." name="CR">CR</item>
+                <item desc="&lt;CR&lt;&gt;LF&gt; framing." name="CR_LF">CR_LF</item>
+            </enum>
             <serves>
                 <event name="OnNewStatusLoadParameterOnReboot">
                     <desc>Notify status if parameters should be loaded on app/device boot up.</desc>
@@ -33,7 +51,7 @@ ToDo +
                     <desc>Event to share processing parameters to the instances.</desc>
                     <param desc="Number of the instance to receive the parameter." multiplicity="1" name="objectNo" type="int"/>
                     <param desc="Name of the parameter." multiplicity="1" name="parameter" type="string"/>
-                    <param desc="Value of the parameter." multiplicity="1" name="value" type="auto"/>
+                    <param desc="Value of the parameter." multiplicity="[?*]" name="value" type="auto"/>
                     <param desc="If parameter is for specifici internal used object, its number." multiplicity="?" name="internalObjectNo" type="int"/>
                 </event>
                 <event name="OnNewSelectedInstance">
@@ -43,11 +61,12 @@ ToDo +
                 <event name="OnDataLoadedOnReboot">
                     <desc>Event to call if module tried to load parameters and should be ready.</desc>
                 </event>
-                <event name="OnNewResultNUM">
-                    <desc>Example of dynamically created event to provide result of instance. +
-NUM will be replaced by the number of instance (e.g. "OnNewResult1"). +
+                <event name="OnNewDataNUM">
+                    <desc>Example of dynamically created event to provide received data of instance. +
+NUM will be replaced by the number of instance (e.g. "OnNewData1"). +
 INFO: Other modules can check via "Script.isServedAsEvent" if event of sepecific instance exists.</desc>
-                    <param desc="Result" multiplicity="1" name="result" type="bool"/>
+                    <param desc="Received data." multiplicity="1" name="data" type="string"/>
+                    <param desc="The timestamp in microseconds at which the first bytes of the frame were received." multiplicity="?" name="timeOfReceive" type="int"/>
                 </event>
                 <event name="OnNewParameterName">
                     <desc>Notify name of persistent data parameter.</desc>
@@ -83,13 +102,109 @@ NUM will be replaced by the number of instance (e.g. "OnNewResult1"). +</desc>
                     <param desc="Eventname to use to forward value." multiplicity="1" name="eventname" type="string"/>
                     <param desc="Value to forward." multiplicity="1" name="value" type="auto"/>
                 </event>
-                <event name="OnNewResult">
-                    <desc>Generic event to notify results. E.g. to forward results from single instances.</desc>
-                    <param desc="Result" multiplicity="1" name="result" type="bool"/>
-                </event>
                 <event name="OnNewStatusRegisteredEvent">
                     <desc>Notify event instance is registered to receive data to process.</desc>
                     <param desc="Name of event." multiplicity="1" name="eventname" type="string"/>
+                </event>
+                <event name="OnNewStatusConnected">
+                    <desc>Notify if selected serial communication is connected.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewStatusAvailableInterfaces">
+                    <desc>Notify available serial communication interfaces.</desc>
+                    <param desc="List of interfaces" multiplicity="1" name="interfaces" type="string"/>
+                </event>
+                <event name="OnNewStatusCommunicationActive">
+                    <desc>Notify if communicaiton is configurated as active.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewStatusType">
+                    <desc>Notify type of serial communication.</desc>
+                    <param desc="Type" multiplicity="1" name="type" type="string"/>
+                </event>
+                <event name="OnNewStatusBaudrate">
+                    <desc>Notify baudrate.</desc>
+                    <param desc="Baudrate" multiplicity="1" name="baudrate" type="int"/>
+                </event>
+                <event name="OnNewStatusFrameRxStart">
+                    <desc>Notify framing for RxStart.</desc>
+                    <param desc="Frame" multiplicity="1" name="frame" type="string"/>
+                </event>
+                <event name="OnNewStatusFrameRxStop">
+                    <desc>Notify framing for RxStop.</desc>
+                    <param desc="Frame" multiplicity="1" name="frame" type="string"/>
+                </event>
+                <event name="OnNewStatusFrameTxStart">
+                    <desc>Notify framing for TxStart.</desc>
+                    <param desc="Frame" multiplicity="1" name="frame" type="string"/>
+                </event>
+                <event name="OnNewStatusFrameTxStop">
+                    <desc>Notify framing for TxStop.</desc>
+                    <param desc="Frame" multiplicity="1" name="frame" type="string"/>
+                </event>
+                <event name="OnNewStatusBufferSizeRx">
+                    <desc>Notify buffer size of receive frame.</desc>
+                    <param desc="Buffer size in bytes." multiplicity="1" name="size" type="int"/>
+                </event>
+                <event name="OnNewStatusBufferSizeTx">
+                    <desc>Notify buffer size of transmit frame.</desc>
+                    <param desc="Buffer size in bytes." multiplicity="1" name="size" type="int"/>
+                </event>
+                <event name="OnNewStatusParity">
+                    <desc>Notify parity of serial communication.</desc>
+                    <param desc="Parity" multiplicity="1" name="parity" type="string"/>
+                </event>
+                <event name="OnNewStatusHandshake">
+                    <desc>Notify if handshake is used.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewStatusReceiveQueueSize">
+                    <desc>Notify queue size of internal receive function.</desc>
+                    <param desc="Size" multiplicity="1" name="size" type="int"/>
+                </event>
+                <event name="OnNewStatusDiscardIfFull">
+                    <desc>Notify if newest (TRUE) or oldest (FALSE) item should be discarded if queue size of receive function is too big.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewStatusWarnOverruns">
+                    <desc>Notify if warnings are active on overruns of the receive function.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewStatusDataBits">
+                    <desc>Notify number of data bits.</desc>
+                    <param desc="Size" multiplicity="1" name="size" type="int"/>
+                </event>
+                <event name="OnNewStatusFlowControl">
+                    <desc>Notify if flow control is active.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewStatusStopBits">
+                    <desc>Notify amount of stop bits.</desc>
+                    <param desc="Amount of stop bits." multiplicity="1" name="stopBits" type="int"/>
+                </event>
+                <event name="OnNewStatusTermination">
+                    <desc>Notfiy if internal termination is used.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </event>
+                <event name="OnNewStatusTempDataToSend">
+                    <desc>Notify temporary set data to transmit.</desc>
+                    <param desc="Data" multiplicity="1" name="data" type="string"/>
+                </event>
+                <event name="OnNewStatusLog">
+                    <desc>Notify log of current selected instance communication.</desc>
+                    <param desc="Log (latest 100 messages)." multiplicity="1" name="log" type="string"/>
+                </event>
+                <event name="OnNewStatusInterface">
+                    <desc>Notify used serial communication interface.</desc>
+                    <param desc="Interface" multiplicity="1" name="interface" type="string"/>
+                </event>
+                <event name="OnNewStatusReceiveTimeout">
+                    <desc>Notify timeout to wait for received data.</desc>
+                    <param desc="Timeout for receive function in [ms]." multiplicity="1" name="timeout" type="int"/>
+                </event>
+                <event name="OnNewStatusModuleIsActive">
+                    <desc>Notify if module can be used on device.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
                 </event>
                 <function name="setParameterName">
                     <desc>Function to set the name of the parameters if saved/loaded via the CSK_PersistentData module.</desc>
@@ -118,17 +233,17 @@ NUM will be replaced by the number of instance (e.g. "OnNewResult1"). +</desc>
                     <return desc="Amount of created instances." multiplicity="1" name="amount" type="int"/>
                 </function>
                 <function name="setRegisterEvent">
-                    <desc>Configure event that this module should listen to. If this one is notified, it will be linked to internal processing function. +
+                    <desc>Configure event that this module should listen to. If this one is notified, it will transmit the attached data of the event via serial interface. +
 (Will be set to currently active instance, see "setSelectedObject")</desc>
                     <param desc="(external) Event name to listen to." multiplicity="1" name="event" type="string"/>
                 </function>
-                <function name="processInstanceNUM">
-                    <desc>Example of dynamically served function to process internally coded function. +
-NUM will be replaced by the number of instance (e.g. "processInstance1"). +
+                <function name="transmitInstanceNUM">
+                    <desc>Example of dynamically served function to transmit data. +
+NUM will be replaced by the number of instance (e.g. "transmitInstance1"). +
 INFO: Other modules can check via "Script.isServedAsFunction" if function of sepecific instance exists. +
 Needs then to be called via "Script.callFunction".</desc>
-                    <param alias="Alias" desc="Transferred object (optional)" multiplicity="?" name="object" type="object"/>
-                    <return desc="Processing result (optional)." multiplicity="?" name="result" type="bool"/>
+                    <param desc="Data to transmit." multiplicity="1" name="data" type="string"/>
+                    <return desc="Number of bytes transmitted; 0 if transmit failed." multiplicity="1" name="sendBytes" type="int"/>
                 </function>
                 <function name="addInstance">
                     <desc>Function to add an additional instance.</desc>
@@ -137,15 +252,234 @@ Needs then to be called via "Script.callFunction".</desc>
                     <desc>Function to reset instances to one single instance. +
 IMPORTANT: As instances start their own threads, the module needs to be restarted if new instances are needed... (see AppEngine docu for "Script.startScript").</desc>
                 </function>
+                <function name="setInterface">
+                    <desc>Function to set interface to use for SerialCom.</desc>
+                    <param desc="Interface" multiplicity="1" name="interface" type="string"/>
+                </function>
+                <function name="setActive">
+                    <desc>Function to set if serial communication should be active.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </function>
+                <function name="setType">
+                    <desc>Function to set type of serial communication.</desc>
+                    <param desc="SerialCom Type." multiplicity="1" name="comType" type="string"/>
+                </function>
+                <function name="setBaudrate">
+                    <desc>Function to set baudrate.</desc>
+                    <param desc="Baudrate" multiplicity="1" name="baudrate" type="int"/>
+                </function>
+                <function name="setFramingRxStart">
+                    <desc>Function to set frame of RxStart.</desc>
+                    <param desc="Framing" multiplicity="1" name="frame" type="string"/>
+                </function>
+                <function name="setFramingRxStop">
+                    <desc>Function to set frame of RxStop.</desc>
+                    <param desc="Framing" multiplicity="1" name="frame" type="string"/>
+                </function>
+                <function name="setFramingTxStart">
+                    <desc>Function to set frame of TxStart.</desc>
+                    <param desc="Framing" multiplicity="1" name="frame" type="string"/>
+                </function>
+                <function name="setFramingTxStop">
+                    <desc>Function to set frame of TxStop.</desc>
+                    <param desc="Framing" multiplicity="1" name="frame" type="string"/>
+                </function>
+                <function name="setFramingBufferSizeRx">
+                    <desc>Function to set maximum size of a packet which can be parsed by the received framing.</desc>
+                    <param desc="Size in bytes." multiplicity="1" name="size" type="int"/>
+                </function>
+                <function name="setFramingBufferSizeTx">
+                    <desc>Function to set maximum size of a packet which can be parsed by the transmitted framing.</desc>
+                    <param desc="Size in bytes." multiplicity="1" name="size" type="int"/>
+                </function>
+                <function name="setParity">
+                    <desc>Function to set parity of serial communication.</desc>
+                    <param desc="Parity mode." multiplicity="1" name="mode" type="string"/>
+                </function>
+                <function name="setHandshake">
+                    <desc>Function to set if handshake is active.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </function>
+                <function name="setReceiveQueueSize">
+                    <desc>Function so set size of internal queue size for the receive function.</desc>
+                    <param desc="Queue size." multiplicity="1" name="size" type="int"/>
+                </function>
+                <function name="setDiscardIfFull">
+                    <desc>Function to configure handling of received items.</desc>
+                    <param desc="Set to TRUE to discard the newest item which is currently added instead of discarding the oldest element." multiplicity="1" name="status" type="bool"/>
+                </function>
+                <function name="setWarnOnOverruns">
+                    <desc>Function to set if warning on overruns should be used for the receive function.</desc>
+                    <param desc="Set to false to disable warning on overruns when using the receive()-function." multiplicity="1" name="status" type="bool"/>
+                </function>
+                <function name="setDataBits">
+                    <desc>Function to set data bits.</desc>
+                    <param desc="DataBits (8 or 7)" multiplicity="1" name="bits" type="int"/>
+                </function>
+                <function name="setFlowControl">
+                    <desc>Function to set flow control.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </function>
+                <function name="setStopBits">
+                    <desc>Function to set stop bits.</desc>
+                    <param desc="Stop bits (1 or 2)" multiplicity="1" name="bits" type="int"/>
+                </function>
+                <function name="setTermination">
+                    <desc>Function to set status of internal termination.</desc>
+                    <param desc="Status" multiplicity="1" name="status" type="bool"/>
+                </function>
+                <function name="setTempDataToSend">
+                    <desc>Function to set temporary data to send via 'trasnitDataViaUI'.</desc>
+                    <param desc="Data" multiplicity="1" name="data" type="string"/>
+                </function>
+                <function name="transmitDataViaUI">
+                    <desc>Function to transmit temporary set data (see 'setTempDataToSend').</desc>
+                </function>
+                <function name="setReceiveTimeout">
+                    <desc>Function to set timeout for received data.</desc>
+                    <param desc="Timeout in [ms]." multiplicity="1" name="time" type="int"/>
+                </function>
+                <function name="receive">
+                    <desc>Function to trigger receive function of currently selected instance.</desc>
+                </function>
+                <function name="receiveInstanceNUM">
+                    <trait>released</trait>
+                    <desc>Example of dynamically served function to trigger receive function of instance.. +
+NUM will be replaced by the number of instance (e.g. "receiveInstance1"). +
+INFO: Other modules can check via "Script.isServedAsFunction" if function of sepecific instance exists. +
+Needs then to be called via "Script.callFunction".</desc>
+                </function>
             </serves>
         </crown>
+        <crown name="Engine">
+            <desc>no description yet</desc>
+            <uses>
+                <event name="OnStarted"/>
+                <function name="getEnumValues"/>
+            </uses>
+        </crown>
+        <crown name="Timer">
+            <desc>no description yet</desc>
+            <uses>
+                <event name="OnExpired"/>
+                <function name="create"/>
+                <function name="setPeriodic"/>
+                <function name="start"/>
+                <function name="register"/>
+                <function name="setExpirationTime"/>
+            </uses>
+        </crown>
+        <crown name="SerialCom">
+            <desc>no description yet</desc>
+            <uses>
+                <event name="OnReceive"/>
+                <function name="isOpened"/>
+                <function name="create"/>
+                <function name="register"/>
+                <function name="setStopBits"/>
+                <function name="transmit"/>
+                <function name="setType"/>
+                <function name="close"/>
+                <function name="setFraming"/>
+                <function name="deregister"/>
+                <function name="setDataBits"/>
+                <function name="setFlowControl"/>
+                <function name="setBaudRate"/>
+                <function name="setFramingBufferSize"/>
+                <function name="setTermination"/>
+                <function name="setParity"/>
+                <function name="setReceiveQueueSize"/>
+                <function name="setHandshake"/>
+                <function name="receive"/>
+                <function name="open"/>
+            </uses>
+        </crown>
+        <crown name="CSK_PersistentData">
+            <desc>no description yet</desc>
+            <uses>
+                <event name="OnInitialDataLoaded"/>
+                <function name="getParameter"/>
+                <function name="setModuleParameterName"/>
+                <function name="addParameter"/>
+                <function name="saveData"/>
+                <function name="getModuleParameterName"/>
+                <function name="getVersion"/>
+            </uses>
+        </crown>
+        <crown name="Log">
+            <desc>no description yet</desc>
+            <uses/>
+            <crown name="Handler">
+                <desc>no description yet</desc>
+                <uses>
+                    <function name="create"/>
+                </uses>
+            </crown>
+            <crown name="SharedLogger">
+                <desc>no description yet</desc>
+                <uses>
+                    <function name="create"/>
+                </uses>
+            </crown>
+        </crown>
+        <crown name="Container">
+            <desc>no description yet</desc>
+            <uses>
+                <function name="get"/>
+                <function name="create"/>
+                <function name="list"/>
+                <function name="add"/>
+            </uses>
+        </crown>
+        <crown name="table">
+            <desc>no description yet</desc>
+            <uses>
+                <function name="remove"/>
+                <function name="insert"/>
+                <function name="sort"/>
+                <function name="concat"/>
+            </uses>
+        </crown>
+        <crown name="Script">
+            <desc>no description yet</desc>
+            <uses>
+                <function name="getStartArgument"/>
+                <function name="deregister"/>
+                <function name="serveFunction"/>
+                <function name="releaseObject"/>
+                <function name="notifyEvent"/>
+                <function name="startScript"/>
+                <function name="register"/>
+                <function name="serveEvent"/>
+            </uses>
+        </crown>
+        <crown name="string">
+            <desc>no description yet</desc>
+            <uses>
+                <function name="char"/>
+                <function name="sub"/>
+                <function name="format"/>
+            </uses>
+        </crown>
+        <crown name="Object">
+            <desc>no description yet</desc>
+            <uses>
+                <function name="getType"/>
+            </uses>
+        </crown>
+        <crown name="DateTime">
+            <desc>no description yet</desc>
+            <uses>
+                <function name="getTime"/>
+            </uses>
+        </crown>
         <meta key="author">SICK AG</meta>
-        <meta key="version">0.1.0</meta>
+        <meta key="version">1.0.0</meta>
         <meta key="priority">low</meta>
         <meta key="copy-protected">false</meta>
         <meta key="read-protected">false</meta>
         <meta key="crown2-flow-engine">false</meta>
-        <meta key="LuaLoadAllEngineAPI">true</meta>
+        <meta key="LuaLoadAllEngineAPI">false</meta>
         <entry default="CSK_Module_MultiSerialCom.lua" path="scripts"/>
     </application>
 </manifest>
