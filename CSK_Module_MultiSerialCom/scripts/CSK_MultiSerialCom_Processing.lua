@@ -251,10 +251,10 @@ local function handleOnNewProcessingParameter(multiSerialComNo, parameter, value
     elseif parameter == 'registeredEvent' then
       _G.logger:info(nameOfModule .. ": Register instance " .. multiSerialComInstanceNumberString .. " on event " .. value)
       if processingParams.registeredEvent ~= '' then
-        Script.deregister(processingParams.registeredEvent, handleOnNewProcessing)
+        Script.deregister(processingParams.registeredEvent, handleOnNewTransmit)
       end
       processingParams.registeredEvent = value
-      Script.register(value, handleOnNewProcessing)
+      Script.register(value, handleOnNewTransmit)
 
     else
       processingParams[parameter] = value

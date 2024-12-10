@@ -560,7 +560,7 @@ local function loadParameters()
       -- If something needs to be configured/activated with new loaded data
       updateProcessingParameters()
       if multiSerialCom_Instances[selectedInstance].parameters.active then
-        
+
       end
       CSK_MultiSerialCom.pageCalled()
     else
