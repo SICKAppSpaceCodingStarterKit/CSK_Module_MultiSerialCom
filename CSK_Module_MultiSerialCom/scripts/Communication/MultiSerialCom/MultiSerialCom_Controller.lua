@@ -40,11 +40,13 @@ Script.serveEvent("CSK_MultiSerialCom.OnNewValueUpdateNUM", "MultiSerialCom_OnNe
 
 -- Real events
 --------------------------------------------------
-
+Script.serveEvent('CSK_MultiSerialCom.OnNewStatusModuleVersion', 'MultiSerialCom_OnNewStatusModuleVersion')
+Script.serveEvent('CSK_MultiSerialCom.OnNewStatusCSKStyle', 'MultiSerialCom_OnNewStatusCSKStyle')
 Script.serveEvent('CSK_MultiSerialCom.OnNewStatusModuleIsActive', 'MultiSerialCom_OnNewStatusModuleIsActive')
 
 Script.serveEvent('CSK_MultiSerialCom.OnNewStatusTempDataToSend', 'MultiSerialCom_OnNewStatusTempDataToSend')
 Script.serveEvent('CSK_MultiSerialCom.OnNewStatusLog', 'MultiSerialCom_OnNewStatusLog')
+Script.serveEvent('CSK_MultiSerialCom.OnNewStatusShowLog', 'MultiSerialCom_OnNewStatusShowLog')
 
 Script.serveEvent('CSK_MultiSerialCom.OnNewStatusConnected', 'MultiSerialCom_OnNewStatusConnected')
 Script.serveEvent('CSK_MultiSerialCom.OnNewStatusAvailableInterfaces', 'MultiSerialCom_OnNewStatusAvailableInterfaces')
@@ -72,6 +74,7 @@ Script.serveEvent('CSK_MultiSerialCom.OnNewStatusTermination', 'MultiSerialCom_O
 
 Script.serveEvent('CSK_MultiSerialCom.OnNewStatusRegisteredEvent', 'MultiSerialCom_OnNewStatusRegisteredEvent')
 
+Script.serveEvent('CSK_MultiSerialCom.OnNewStatusFlowConfigPriority', 'MultiSerialCom_OnNewStatusFlowConfigPriority')
 Script.serveEvent("CSK_MultiSerialCom.OnNewStatusLoadParameterOnReboot", "MultiSerialCom_OnNewStatusLoadParameterOnReboot")
 Script.serveEvent("CSK_MultiSerialCom.OnPersistentDataModuleAvailable", "MultiSerialCom_OnPersistentDataModuleAvailable")
 Script.serveEvent("CSK_MultiSerialCom.OnNewParameterName", "MultiSerialCom_OnNewParameterName")
@@ -200,12 +203,15 @@ local function handleOnExpiredTmrMultiSerialCom()
 
   updateUserLevel()
 
-  Script.notifyEvent('MultiSerialCom_OnNewStatusModuleIsActive', _G.availableAPIs.specific)
+  Script.notifyEvent("MultiSerialCom_OnNewStatusModuleVersion", 'v' .. multiSerialCom_Model.version)
+  Script.notifyEvent("MultiSerialCom_OnNewStatusCSKStyle", multiSerialCom_Model.styleForUI)
+  Script.notifyEvent("MultiSerialCom_OnNewStatusModuleIsActive", _G.availableAPIs.default and _G.availableAPIs.specific)
 
-  if _G.availableAPIs.specific then
+  if _G.availableAPIs.default and _G.availableAPIs.specific then
 
     Script.notifyEvent('MultiSerialCom_OnNewSelectedInstance', selectedInstance)
 
+    Script.notifyEvent('MultiSerialCom_OnNewStatusShowLog', multiSerialCom_Instances[selectedInstance].parameters.showLog)
     Script.notifyEvent('MultiSerialCom_OnNewStatusLog', tempLog)
     Script.notifyEvent('MultiSerialCom_OnNewStatusTempDataToSend', tempDataToSend)
 
@@ -244,6 +250,7 @@ local function handleOnExpiredTmrMultiSerialCom()
 
     Script.notifyEvent("MultiSerialCom_OnNewStatusRegisteredEvent", multiSerialCom_Instances[selectedInstance].parameters.registeredEvent)
 
+    Script.notifyEvent("MultiSerialCom_OnNewStatusFlowConfigPriority", multiSerialCom_Instances[selectedInstance].parameters.flowConfigPriority)
     Script.notifyEvent("MultiSerialCom_OnNewStatusLoadParameterOnReboot", multiSerialCom_Instances[selectedInstance].parameterLoadOnReboot)
     Script.notifyEvent("MultiSerialCom_OnPersistentDataModuleAvailable", multiSerialCom_Instances[selectedInstance].persistentModuleAvailable)
     Script.notifyEvent("MultiSerialCom_OnNewParameterName", multiSerialCom_Instances[selectedInstance].parametersName)
@@ -253,8 +260,10 @@ Timer.register(tmrMultiSerialCom, "OnExpired", handleOnExpiredTmrMultiSerialCom)
 
 -- ********************* UI Setting / Submit Functions Start ********************
 
-local function pageCalled()  
-  updateUserLevel() -- try to hide user specific content asap
+local function pageCalled()
+  if _G.availableAPIs.default and _G.availableAPIs.specific then
+    updateUserLevel() -- try to hide user specific content asap
+  end
   tmrMultiSerialCom:start()
   return ''
 end
@@ -265,12 +274,17 @@ local function setSelectedInstance(instance)
   _G.logger:fine(nameOfModule .. ": New selected instance = " .. tostring(selectedInstance))
   multiSerialCom_Instances[selectedInstance].activeInUI = true
   Script.notifyEvent('MultiSerialCom_OnNewProcessingParameter', selectedInstance, 'activeInUI', true)
+  tempLog = ''
   tmrMultiSerialCom:start()
 end
 Script.serveFunction("CSK_MultiSerialCom.setSelectedInstance", setSelectedInstance)
 
 local function getInstancesAmount ()
-  return #multiSerialCom_Instances
+  if multiSerialCom_Instances then
+    return #multiSerialCom_Instances
+  else
+    return 0
+  end
 end
 Script.serveFunction("CSK_MultiSerialCom.getInstancesAmount", getInstancesAmount)
 
@@ -298,6 +312,14 @@ local function resetInstances()
 end
 Script.serveFunction('CSK_MultiSerialCom.resetInstances', resetInstances)
 
+local function setShowLog(status)
+  for instanceKey, _ in ipairs(multiSerialCom_Instances) do
+    multiSerialCom_Instances[instanceKey].parameters.showLog = status
+  end
+  Script.notifyEvent('MultiSerialCom_OnNewProcessingParameter', selectedInstance, 'showLog', status)
+end
+Script.serveFunction('CSK_MultiSerialCom.setShowLog', setShowLog)
+
 local function setRegisterEvent(event)
   multiSerialCom_Instances[selectedInstance].parameters.registeredEvent = event
   Script.notifyEvent('MultiSerialCom_OnNewProcessingParameter', selectedInstance, 'registeredEvent', event)
@@ -319,7 +341,7 @@ local function setInterface(interface)
   local check = true
   for i = 1, #multiSerialCom_Instances do
     if i ~=  selectedInstance then
-      if multiSerialCom_Instances[i].parameters.interface == interface then
+      if multiSerialCom_Instances[i].parameters.interface == interface and multiSerialCom_Instances[i].parameters.active == true then
         check = false
       end
     end
@@ -344,7 +366,7 @@ local function setActive(status)
     local check = true
     for i = 1, #multiSerialCom_Instances do
       if i ~=  selectedInstance then
-        if multiSerialCom_Instances[i].parameters.interface == interface then
+        if multiSerialCom_Instances[i].parameters.interface == interface and multiSerialCom_Instances[i].parameters.active == true then
           check = false
         end
       end
@@ -359,6 +381,8 @@ local function setActive(status)
       Script.notifyEvent('MultiSerialCom_OnNewStatusCommunicationActive',  false)
     end
   else
+    _G.logger:fine(nameOfModule .. ": Set activation status to = " .. tostring(status))
+    multiSerialCom_Instances[selectedInstance].parameters.active = false
     Script.notifyEvent('MultiSerialCom_OnNewProcessingParameter', selectedInstance, 'close')
   end
 end
@@ -522,6 +546,29 @@ local function updateProcessingParameters()
   setActive(multiSerialCom_Instances[selectedInstance].parameters.active)
 end
 
+local function getStatusModuleActive()
+  return _G.availableAPIs.default and _G.availableAPIs.specific
+end
+Script.serveFunction('CSK_MultiSerialCom.getStatusModuleActive', getStatusModuleActive)
+
+local function clearFlowConfigRelevantConfiguration()
+  for i = 1, #multiSerialCom_Instances do
+    multiSerialCom_Instances[i].parameters.registeredEvent = ''
+    Script.notifyEvent('MultiSerialCom_OnNewProcessingParameter', i, 'deregisterFromEvent')
+    Script.notifyEvent('MultiSerialCom_OnNewStatusRegisteredEvent', '')
+  end
+end
+Script.serveFunction('CSK_MultiSerialCom.clearFlowConfigRelevantConfiguration', clearFlowConfigRelevantConfiguration)
+
+local function getParameters(instanceNo)
+  if instanceNo <= #multiSerialCom_Instances then
+    return helperFuncs.json.encode(multiSerialCom_Instances[instanceNo].parameters)
+  else
+    return ''
+  end
+end
+Script.serveFunction('CSK_MultiSerialCom.getParameters', getParameters)
+
 -- *****************************************************************
 -- Following function can be adapted for CSK_PersistentData module usage
 -- *****************************************************************
@@ -532,7 +579,7 @@ local function setParameterName(name)
 end
 Script.serveFunction("CSK_MultiSerialCom.setParameterName", setParameterName)
 
-local function sendParameters()
+local function sendParameters(noDataSave)
   if multiSerialCom_Instances[selectedInstance].persistentModuleAvailable then
     CSK_PersistentData.addParameter(helperFuncs.convertTable2Container(multiSerialCom_Instances[selectedInstance].parameters), multiSerialCom_Instances[selectedInstance].parametersName)
 
@@ -543,7 +590,9 @@ local function sendParameters()
       CSK_PersistentData.setModuleParameterName(nameOfModule, multiSerialCom_Instances[selectedInstance].parametersName, multiSerialCom_Instances[selectedInstance].parameterLoadOnReboot, tostring(selectedInstance))
     end
     _G.logger:fine(nameOfModule .. ": Send MultiSerialCom parameters with name '" .. multiSerialCom_Instances[selectedInstance].parametersName .. "' to CSK_PersistentData module.")
-    CSK_PersistentData.saveData()
+    if not noDataSave then
+      CSK_PersistentData.saveData()
+    end
   else
     _G.logger:warning(nameOfModule .. ": CSK_PersistentData module not available.")
   end
@@ -557,17 +606,24 @@ local function loadParameters()
       _G.logger:fine(nameOfModule .. ": Loaded parameters for multiSerialComObject " .. tostring(selectedInstance) .. " from CSK_PersistentData module.")
       multiSerialCom_Instances[selectedInstance].parameters = helperFuncs.convertContainer2Table(data)
 
+      multiSerialCom_Instances[selectedInstance].parameters = helperFuncs.checkParameters(multiSerialCom_Instances[selectedInstance].parameters, helperFuncs.defaultParameters.getParameters())
+
       -- If something needs to be configured/activated with new loaded data
       updateProcessingParameters()
       if multiSerialCom_Instances[selectedInstance].parameters.active then
-        
+
       end
-      CSK_MultiSerialCom.pageCalled()
+      tmrMultiSerialCom:start()
+      return true
     else
       _G.logger:warning(nameOfModule .. ": Loading parameters from CSK_PersistentData module did not work.")
+      tmrMultiSerialCom:start()
+      return false
     end
   else
     _G.logger:warning(nameOfModule .. ": CSK_PersistentData module not available.")
+    tmrMultiSerialCom:start()
+    return false
   end
   tmrMultiSerialCom:start()
 end
@@ -576,53 +632,80 @@ Script.serveFunction("CSK_MultiSerialCom.loadParameters", loadParameters)
 local function setLoadOnReboot(status)
   multiSerialCom_Instances[selectedInstance].parameterLoadOnReboot = status
   _G.logger:fine(nameOfModule .. ": Set new status to load setting on reboot: " .. tostring(status))
+  Script.notifyEvent("MultiSerialCom_OnNewStatusLoadParameterOnReboot", status)
 end
 Script.serveFunction("CSK_MultiSerialCom.setLoadOnReboot", setLoadOnReboot)
+
+local function setFlowConfigPriority(status)
+  multiSerialCom_Instances[selectedInstance].parameters.flowConfigPriority = status
+  _G.logger:fine(nameOfModule .. ": Set new status of FlowConfig priority: " .. tostring(status))
+  Script.notifyEvent("MultiSerialCom_OnNewStatusFlowConfigPriority", multiSerialCom_Instances[selectedInstance].parameters.flowConfigPriority)
+end
+Script.serveFunction('CSK_MultiSerialCom.setFlowConfigPriority', setFlowConfigPriority)
 
 --- Function to react on initial load of persistent parameters
 local function handleOnInitialDataLoaded()
 
-  _G.logger:fine(nameOfModule .. ': Try to initially load parameter from CSK_PersistentData module.')
-  if string.sub(CSK_PersistentData.getVersion(), 1, 1) == '1' then
+  if _G.availableAPIs.default and _G.availableAPIs.specific then
+    _G.logger:fine(nameOfModule .. ': Try to initially load parameter from CSK_PersistentData module.')
+    if string.sub(CSK_PersistentData.getVersion(), 1, 1) == '1' then
 
-    _G.logger:warning(nameOfModule .. ': CSK_PersistentData module is too old and will not work. Please update CSK_PersistentData module.')
+      _G.logger:warning(nameOfModule .. ': CSK_PersistentData module is too old and will not work. Please update CSK_PersistentData module.')
 
-    for j = 1, #multiSerialCom_Instances do
-      multiSerialCom_Instances[j].persistentModuleAvailable = false
-    end
-  else
-    -- Check if CSK_PersistentData version is >= 3.0.0
-    if tonumber(string.sub(CSK_PersistentData.getVersion(), 1, 1)) >= 3 then
-      local parameterName, loadOnReboot, totalInstances = CSK_PersistentData.getModuleParameterName(nameOfModule, '1')
-      -- Check for amount if instances to create
-      if totalInstances then
-        local c = 2
-        while c <= totalInstances do
-          addInstance()
-          c = c+1
+      for j = 1, #multiSerialCom_Instances do
+        multiSerialCom_Instances[j].persistentModuleAvailable = false
+      end
+    else
+      -- Check if CSK_PersistentData version is >= 3.0.0
+      if tonumber(string.sub(CSK_PersistentData.getVersion(), 1, 1)) >= 3 then
+        local parameterName, loadOnReboot, totalInstances = CSK_PersistentData.getModuleParameterName(nameOfModule, '1')
+        -- Check for amount if instances to create
+        if totalInstances then
+          local c = 2
+          while c <= totalInstances do
+            addInstance()
+            c = c+1
+          end
         end
       end
-    end
 
-    for i = 1, #multiSerialCom_Instances do
-      local parameterName, loadOnReboot = CSK_PersistentData.getModuleParameterName(nameOfModule, tostring(i))
-
-      if parameterName then
-        multiSerialCom_Instances[i].parametersName = parameterName
-        multiSerialCom_Instances[i].parameterLoadOnReboot = loadOnReboot
+      if not multiSerialCom_Instances then
+        return
       end
 
-      if multiSerialCom_Instances[i].parameterLoadOnReboot then
-        setSelectedInstance(i)
-        loadParameters()
+      for i = 1, #multiSerialCom_Instances do
+        local parameterName, loadOnReboot = CSK_PersistentData.getModuleParameterName(nameOfModule, tostring(i))
+
+        if parameterName then
+          multiSerialCom_Instances[i].parametersName = parameterName
+          multiSerialCom_Instances[i].parameterLoadOnReboot = loadOnReboot
+        end
+
+        if multiSerialCom_Instances[i].parameterLoadOnReboot then
+          setSelectedInstance(i)
+          loadParameters()
+        end
       end
+      Script.notifyEvent('MultiSerialCom_OnDataLoadedOnReboot')
     end
-    Script.notifyEvent('MultiSerialCom_OnDataLoadedOnReboot')
   end
 end
 if _G.availableAPIs.specific then
   Script.register("CSK_PersistentData.OnInitialDataLoaded", handleOnInitialDataLoaded)
 end
+
+local function resetModule()
+  if _G.availableAPIs.default and _G.availableAPIs.specific then
+    clearFlowConfigRelevantConfiguration()
+    pageCalled()
+  end
+end
+Script.serveFunction('CSK_MultiSerialCom.resetModule', resetModule)
+Script.register("CSK_PersistentData.OnResetAllModules", resetModule)
+
+-- *************************************************
+-- END of functions for CSK_PersistentData module usage
+-- *************************************************
 
 return funcs
 

@@ -14,7 +14,7 @@ local multiSerialComInstanceNumber = scriptParams:get('multiSerialComInstanceNum
 local multiSerialComInstanceNumberString = tostring(multiSerialComInstanceNumber) -- number of this instance as string
 
 -- Event to notify new received data
-Script.serveEvent("CSK_MultiSerialCom.OnNewData" .. multiSerialComInstanceNumberString, "MultiSerialCom_OnNewData" .. multiSerialComInstanceNumberString, 'string, int:?')
+Script.serveEvent("CSK_MultiSerialCom.OnNewData" .. multiSerialComInstanceNumberString, "MultiSerialCom_OnNewData" .. multiSerialComInstanceNumberString, 'binary, int:?')
 -- Event to forward content from this thread to Controller to show e.g. on UI
 Script.serveEvent("CSK_MultiSerialCom.OnNewValueToForward".. multiSerialComInstanceNumberString, "MultiSerialCom_OnNewValueToForward" .. multiSerialComInstanceNumberString, 'string, auto')
 -- Event to forward update of e.g. parameter update to keep data in sync between threads
@@ -27,6 +27,7 @@ local processingParams = {}
 processingParams.registeredEvent = scriptParams:get('registeredEvent')
 processingParams.activeInUI = false
 
+processingParams.showLog = scriptParams:get('showLog')
 processingParams.active = scriptParams:get('active')
 processingParams.interface = scriptParams:get('interface')
 processingParams.type = scriptParams:get('type')
@@ -93,14 +94,16 @@ end
 
 local function handleOnNewTransmit(data)
   if serialHandle then
-    _G.logger:info(nameOfModule .. ": Transmit on instance No." .. multiSerialComInstanceNumberString)
+    _G.logger:fine(nameOfModule .. ": Transmit on instance No." .. multiSerialComInstanceNumberString)
     local numberOfSendBytes = SerialCom.transmit(serialHandle, data)
 
-    table.insert(log, 1, DateTime.getTime() .. ' - SENT = ' .. tostring(data))
-    if #log == 100 then
-      table.remove(log, 100)
+    if processingParams.showLog then
+      table.insert(log, 1, DateTime.getTime() .. ' - SENT = ' .. tostring(data))
+      if #log == 100 then
+        table.remove(log, 100)
+      end
+      sendLog()
     end
-    sendLog()
 
     return numberOfSendBytes
 
@@ -109,7 +112,7 @@ local function handleOnNewTransmit(data)
     return 0
   end
 end
-Script.serveFunction("CSK_MultiSerialCom.transmitInstance"..multiSerialComInstanceNumberString, handleOnNewTransmit, 'string', 'int:1')
+Script.serveFunction("CSK_MultiSerialCom.transmitInstance"..multiSerialComInstanceNumberString, handleOnNewTransmit, 'binary', 'int:1')
 
 local function receive()
   if serialHandle then
@@ -130,14 +133,16 @@ Script.serveFunction("CSK_MultiSerialCom.receiveInstance"..multiSerialComInstanc
 ---@param timeOfReceive int The timestamp in microseconds at which the first bytes of the frame were received.
 local function handleOnReceive(data, timeOfReceive)
 
-  _G.logger:info(nameOfModule .. ": Received data = " .. data)
+  _G.logger:fine(nameOfModule .. ": Received data = " .. data)
   Script.notifyEvent("MultiSerialCom_OnNewData" .. multiSerialComInstanceNumberString, data, timeOfReceive)
 
-  table.insert(log, 1, DateTime.getTime() .. ' - RECV = ' .. tostring(data))
-  if #log == 100 then
-    table.remove(log, 100)
+  if processingParams.showLog then
+    table.insert(log, 1, DateTime.getTime() .. ' - RECV = ' .. tostring(data))
+    if #log == 100 then
+      table.remove(log, 100)
+    end
+    sendLog()
   end
-  sendLog()
 end
 
 --- Function to update the serial connection with new setup
@@ -214,7 +219,10 @@ end
 ---@param internalObjectNo int? Number of object
 local function handleOnNewProcessingParameter(multiSerialComNo, parameter, value, internalObjectNo)
 
-  if multiSerialComNo == multiSerialComInstanceNumber then -- set parameter only in selected script
+  if parameter == 'showLog' then
+    processingParams[parameter] = value
+
+  elseif multiSerialComNo == multiSerialComInstanceNumber then -- set parameter only in selected script
     if value ~= nil then
       _G.logger:fine(nameOfModule .. ": Update parameter '" .. parameter .. "' of multiSerialComInstanceNo." .. tostring(multiSerialComNo) .. " to value = " .. tostring(value))
     else
@@ -251,10 +259,17 @@ local function handleOnNewProcessingParameter(multiSerialComNo, parameter, value
     elseif parameter == 'registeredEvent' then
       _G.logger:info(nameOfModule .. ": Register instance " .. multiSerialComInstanceNumberString .. " on event " .. value)
       if processingParams.registeredEvent ~= '' then
-        Script.deregister(processingParams.registeredEvent, handleOnNewProcessing)
+        Script.deregister(processingParams.registeredEvent, handleOnNewTransmit)
       end
       processingParams.registeredEvent = value
-      Script.register(value, handleOnNewProcessing)
+      Script.register(value, handleOnNewTransmit)
+
+    elseif parameter == 'deregisterFromEvent' then
+      if processingParams.registeredEvent ~= '' then
+        _G.logger:fine(nameOfModule .. ": Deregister instance " .. multiSerialComInstanceNumberString .. " from event.")
+        Script.deregister(processingParams.registeredEvent, handleOnNewTransmit)
+        processingParams.registeredEvent = ''
+      end
 
     else
       processingParams[parameter] = value

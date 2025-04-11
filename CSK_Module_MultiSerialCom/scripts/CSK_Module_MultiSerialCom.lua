@@ -22,7 +22,6 @@
 
 ---@diagnostic disable: undefined-global, redundant-parameter, missing-parameter
 
--- CreationTemplateVersion: 3.6.0
 --**************************************************************************
 --**********************Start Global Scope *********************************
 --**************************************************************************
@@ -51,11 +50,13 @@ local multiSerialCom_Instances = {} -- Handle all instances
 local multiSerialComController = require('Communication/MultiSerialCom/MultiSerialCom_Controller')
 
 -- Check if specific APIs are available on device
-if availableAPIs.specific then
+if _G.availableAPIs.default and _G.availableAPIs.specific then
+  local setInstanceHandle = require('Communication/MultiSerialCom/FlowConfig/MultiSerialCom_FlowConfig')
   table.insert(multiSerialCom_Instances, multiSerialCom_Model.create(1)) -- Create at least 1 instance
   multiSerialComController.setMultiSerialCom_Instances_Handle(multiSerialCom_Instances) -- share handle of instances
+  setInstanceHandle(multiSerialCom_Instances)
 else
-  _G.logger:warning("CSK_SerialCom : Features of this module are not supported on this device. Missing APIs/interfaces.")
+  _G.logger:warning("CSK_MultiSerialCom : Relevant CROWN(s) not available on device. Module is not supported...")
 end
 
 --**************************************************************************
@@ -98,7 +99,7 @@ local function main()
 
   ----------------------------------------------------------------------------------------
 
-  if availableAPIs.specific then
+  if _G.availableAPIs.default and _G.availableAPIs.specific then
     CSK_MultiSerialCom.setSelectedInstance(1)
   end
   CSK_MultiSerialCom.pageCalled() -- Update UI

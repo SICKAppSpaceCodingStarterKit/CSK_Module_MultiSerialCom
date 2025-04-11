@@ -13,11 +13,21 @@ local nameOfModule = 'CSK_MultiSerialCom'
 local multiSerialCom = {}
 multiSerialCom.__index = multiSerialCom
 
+multiSerialCom.styleForUI = 'None' -- Optional parameter to set UI style
+multiSerialCom.version = Engine.getCurrentAppVersion() -- Version of module
+
 --**************************************************************************
 --********************** End Global Scope **********************************
 --**************************************************************************
 --**********************Start Function Scope *******************************
 --**************************************************************************
+
+--- Function to react on UI style change
+local function handleOnStyleChanged(theme)
+  multiSerialCom.styleForUI = theme
+  Script.notifyEvent("MultiSerialCom_OnNewStatusCSKStyle", multiSerialCom.styleForUI)
+end
+Script.register('CSK_PersistentData.OnNewStatusCSKStyle', handleOnStyleChanged)
 
 --- Function to create new instance
 ---@param multiSerialComInstanceNo int Number of instance
@@ -54,37 +64,16 @@ function multiSerialCom.create(multiSerialComInstanceNo)
 
   -- Parameters to be saved permanently if wanted
   self.parameters = {}
+  self.parameters = self.helperFuncs.defaultParameters.getParameters() -- Load default parameters
+
   self.parameters.interface = self.availableInterfaces[1] -- Interface to use
-  self.parameters.registeredEvent = '' -- If thread internal function should react on external event, define it here, e.g. 'CSK_OtherModule.OnNewInput'
-  self.parameters.processingFile = 'CSK_MultiSerialCom_Processing' -- which file to use for processing (will be started in own thread)
-  self.parameters.active = false -- Status if connection should be active
-  self.parameters.type = 'RS232' -- Type of serial interface, like 'RS232', 'RS422', 'RS485'
-  self.parameters.baudrate = 115200 -- Used baudrate, like 1200,2400,4800,9600,19200,38400,57600,115200
-  self.parameters.framingRxStart = 'None' -- Start framing for receiving, like 'None', 'STX', 'ETX', 'CR', 'LF', 'CR_LF'
-  self.parameters.framingRxStop = 'None' -- Stop framing for receiving
-  self.parameters.framingTxStart = 'None' -- Start framing for sending
-  self.parameters.framingTxStop = 'None' -- Stop framing for sending
-
-  self.parameters.framingBufferSizeRx = 10240 -- Maximum size of a packet which can be parsed by the received framing.
-  self.parameters.framingBufferSizeTx = 10240 -- Maximum size of a packet which can be parsed by the transmitted framing.
-  self.parameters.parity = 'N' -- Parity, like "N", "O", "E", "M", "S" (None, Odd, Even, Mark, Space)
-  self.parameters.handshake = false -- true to enable Xon/Xoff handshake, false to disable
-
-  self.parameters.receiveTimeout = 0 -- Timeout in ms to wait for received data. 0 is default and means directly return
-  self.parameters.receiveQueueSize = 10 -- Internal queue size for the receive()-function
-  self.parameters.discardIfFull = false -- Set to TRUE to discard the newest item which is currently added instead of discarding the oldest element
-  self.parameters.warnOverruns = true -- Set to false to disable warning on overruns when using the receive()-function
-
-  self.parameters.dataBits = 8 -- Number of data bits (8 or 7)
-  self.parameters.flowControl = false -- Hardware flow control
-  self.parameters.stopBits = 1 -- Number of stop bits (1 or 2)
-  self.parameters.termination = false -- Internal termination
 
   -- Parameters to give to the processing script
   self.multiSerialComProcessingParams = Container.create()
   self.multiSerialComProcessingParams:add('multiSerialComInstanceNumber', multiSerialComInstanceNo, "INT")
   self.multiSerialComProcessingParams:add('registeredEvent', self.parameters.registeredEvent, "STRING")
 
+  self.multiSerialComProcessingParams:add('showLog', self.parameters.showLog, "BOOL")
   self.multiSerialComProcessingParams:add('active', self.parameters.active, "BOOL")
   self.multiSerialComProcessingParams:add('interface', self.parameters.interface, "STRING")
   self.multiSerialComProcessingParams:add('type', self.parameters.type, "STRING")
