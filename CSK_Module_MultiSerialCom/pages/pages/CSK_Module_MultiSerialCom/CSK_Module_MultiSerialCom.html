@@ -6,13 +6,13 @@
         <layout-row id="RowLayout44">
             <layout-column id="ColumnLayout61" style="align-items: stretch">
                 <layout-row id="RowLayout01" style="align-items: baseline">
-                    <davinci-value-display id="VD_Title" class="myCustomLabel_CSK_Module_MultiSerialCom"
-                        value="Serial Com">
-                    </davinci-value-display>
+                    <h1 id="Heading_Title" class="myCustomLabel_CSK_Module_MultiSerialCom">
+                        Serial Com
+                    </h1>
                     <davinci-value-display id="VD_Version">
-                        <crown-edpws-binding property="value" name="CSK_MultiSerialCom/OnNewStatusModuleVersion"
-                            update-on-resume>
-                        </crown-edpws-binding>
+						<crown-on property="value"
+							crown-event="CSK_MultiSerialCom/OnNewStatusModuleVersion">
+						</crown-on>
                     </davinci-value-display>
                 </layout-row>
             </layout-column>
@@ -57,7 +57,8 @@
                                                     style="align-items: center; justify-content: center">
                                                     <davinci-button id="Button_AddInstance"
                                                         class="myCustomButton_CSK_Module_MultiSerialCom" type="outline"
-                                                        icon-position="append" icon="content/add" title="Add instance">
+                                                        title="Add instance">
+                                                        <davinci-icon icon="content/add"></davinci-icon>
                                                         <span></span>
                                                         <crown-binding event="submit"
                                                             name="CSK_MultiSerialCom/addInstance" auto-commit>
@@ -65,9 +66,8 @@
                                                     </davinci-button>
                                                     <davinci-button id="Button_ResetInstances"
                                                         class="myCustomButton_CSK_Module_MultiSerialCom" type="outline"
-                                                        icon-position="append"
-                                                        title="Reset insances to single instance. Reload app after reseting."
-                                                        icon="action/delete">
+                                                        title="Reset insances to single instance. Reload app after reseting.">
+                                                        <davinci-icon icon="action/delete"></davinci-icon>
                                                         <span></span>
                                                         <crown-binding event="submit"
                                                             name="CSK_MultiSerialCom/resetInstances" auto-commit>
@@ -113,9 +113,9 @@
                                                             style="justify-content: center; align-items: center">
                                                             <davinci-button id="B_LoadConfig"
                                                                 class="myCustomButton_CSK_Module_MultiSerialCom"
-                                                                type="outline" icon-position="append"
-                                                                title="Load configured parameters from CSK_PersistentData module."
-                                                                icon="action/history">
+                                                                type="outline"
+                                                                title="Load configured parameters from CSK_PersistentData module.">
+                                                                <davinci-icon icon="action/history"></davinci-icon>
                                                                 <span></span>
                                                                 <crown-binding event="submit"
                                                                     name="CSK_MultiSerialCom/loadParameters"
@@ -129,9 +129,9 @@
                                                             </davinci-button>
                                                             <davinci-button id="B_SaveConfig"
                                                                 class="myCustomButton_CSK_Module_MultiSerialCom"
-                                                                type="outline" icon-position="append"
-                                                                title="Save current configured parameters of this module within CSK_PersistentData module."
-                                                                icon="content/save">
+                                                                type="outline"
+                                                                title="Save current configured parameters of this module within CSK_PersistentData module.">
+                                                                <davinci-icon icon="content/save"></davinci-icon>
                                                                 <span></span>
                                                                 <crown-binding event="submit"
                                                                     name="CSK_MultiSerialCom/sendParameters"
@@ -268,7 +268,8 @@
                                         <layout-row id="RowLayout2" style="align-items: center">
                                             <davinci-button id="Button_Transmit"
                                                 class="myCustomButton_CSK_Module_MultiSerialCom" type="outline"
-                                                icon-position="append" title="Transmit" icon="content/send">
+                                                title="Transmit">
+                                                <davinci-icon icon="content/send"></davinci-icon>
                                                 <span></span>
                                                 <crown-binding event="submit"
                                                     name="CSK_MultiSerialCom/transmitDataViaUI" auto-commit>
@@ -276,8 +277,8 @@
                                             </davinci-button>
                                             <davinci-button id="Button_Receive"
                                                 class="myCustomButton_CSK_Module_MultiSerialCom" type="outline"
-                                                icon-position="append" icon="communication/call_received"
                                                 title="Receive">
+                                                <davinci-icon icon="communication/call_received"></davinci-icon>
                                                 <span></span>
                                                 <crown-binding event="submit" name="CSK_MultiSerialCom/receive"
                                                     auto-commit>

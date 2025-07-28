@@ -553,9 +553,11 @@ Script.serveFunction('CSK_MultiSerialCom.getStatusModuleActive', getStatusModule
 
 local function clearFlowConfigRelevantConfiguration()
   for i = 1, #multiSerialCom_Instances do
-    multiSerialCom_Instances[i].parameters.registeredEvent = ''
-    Script.notifyEvent('MultiSerialCom_OnNewProcessingParameter', i, 'deregisterFromEvent')
-    Script.notifyEvent('MultiSerialCom_OnNewStatusRegisteredEvent', '')
+    if multiSerialCom_Instances[i].parameters.flowConfigPriority then
+      multiSerialCom_Instances[i].parameters.registeredEvent = ''
+      Script.notifyEvent('MultiSerialCom_OnNewProcessingParameter', i, 'deregisterFromEvent')
+      Script.notifyEvent('MultiSerialCom_OnNewStatusRegisteredEvent', '')
+    end
   end
 end
 Script.serveFunction('CSK_MultiSerialCom.clearFlowConfigRelevantConfiguration', clearFlowConfigRelevantConfiguration)
@@ -696,7 +698,11 @@ end
 
 local function resetModule()
   if _G.availableAPIs.default and _G.availableAPIs.specific then
-    clearFlowConfigRelevantConfiguration()
+    for i = 1, #multiSerialCom_Instances do
+      multiSerialCom_Instances[i].parameters.registeredEvent = ''
+      Script.notifyEvent('MultiSerialCom_OnNewProcessingParameter', i, 'deregisterFromEvent')
+      Script.notifyEvent('MultiSerialCom_OnNewStatusRegisteredEvent', '')
+    end
     pageCalled()
   end
 end
