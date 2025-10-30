@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## Release 2.0.1
+
+### Improvements
+- Better instance handling regarding FlowConfig
+
+### Bugfix
+- Wrong ENUM check within checkAPI
+- Legacy bindings of ValueDisplay elements within UI did not work if deployed with VS Code AppSpace SDK
+- UI differs if deployed via Appstudio or VS Code AppSpace SDK
+- Fullscreen icon of iFrame was visible
+
 ## Release 2.0.0
 
 Major change: Handles serial data as binary (was string before)

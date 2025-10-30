@@ -41,7 +41,13 @@ end
 
 availableAPIs.default = xpcall(loadAPIs, debug.traceback) -- TRUE if all default APIs were loaded correctly
 availableAPIs.specific = xpcall(loadSpecificAPIs, debug.traceback)-- TRUE if all specific APIs were loaded correctly
-if #(Engine.getEnumValues('SerialPorts')) == 0 then
+
+local serialPorts = Engine.getEnumValues('SerialPorts')
+if serialPorts ~= nil then
+  if #serialPorts == 0 then
+    availableAPIs.specific = false
+  end
+else
   availableAPIs.specific = false
 end
 

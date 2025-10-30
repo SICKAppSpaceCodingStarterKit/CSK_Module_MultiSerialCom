@@ -51,10 +51,9 @@ local multiSerialComController = require('Communication/MultiSerialCom/MultiSeri
 
 -- Check if specific APIs are available on device
 if _G.availableAPIs.default and _G.availableAPIs.specific then
-  local setInstanceHandle = require('Communication/MultiSerialCom/FlowConfig/MultiSerialCom_FlowConfig')
+  require('Communication/MultiSerialCom/FlowConfig/MultiSerialCom_FlowConfig')
   table.insert(multiSerialCom_Instances, multiSerialCom_Model.create(1)) -- Create at least 1 instance
   multiSerialComController.setMultiSerialCom_Instances_Handle(multiSerialCom_Instances) -- share handle of instances
-  setInstanceHandle(multiSerialCom_Instances)
 else
   _G.logger:warning("CSK_MultiSerialCom : Relevant CROWN(s) not available on device. Module is not supported...")
 end

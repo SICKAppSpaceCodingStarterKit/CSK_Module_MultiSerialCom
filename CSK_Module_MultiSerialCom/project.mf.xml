@@ -393,128 +393,6 @@ Needs then to be called via "Script.callFunction".</desc>
                 </function>
             </serves>
         </crown>
-        <crown name="Engine">
-            <desc>no description yet</desc>
-            <uses>
-                <event name="OnStarted"/>
-                <function name="getEnumValues"/>
-            </uses>
-        </crown>
-        <crown name="Timer">
-            <desc>no description yet</desc>
-            <uses>
-                <event name="OnExpired"/>
-                <function name="create"/>
-                <function name="setPeriodic"/>
-                <function name="start"/>
-                <function name="register"/>
-                <function name="setExpirationTime"/>
-            </uses>
-        </crown>
-        <crown name="SerialCom">
-            <desc>no description yet</desc>
-            <uses>
-                <event name="OnReceive"/>
-                <function name="isOpened"/>
-                <function name="create"/>
-                <function name="register"/>
-                <function name="setStopBits"/>
-                <function name="transmit"/>
-                <function name="setType"/>
-                <function name="close"/>
-                <function name="setFraming"/>
-                <function name="deregister"/>
-                <function name="setDataBits"/>
-                <function name="setFlowControl"/>
-                <function name="setBaudRate"/>
-                <function name="setFramingBufferSize"/>
-                <function name="setTermination"/>
-                <function name="setParity"/>
-                <function name="setReceiveQueueSize"/>
-                <function name="setHandshake"/>
-                <function name="receive"/>
-                <function name="open"/>
-            </uses>
-        </crown>
-        <crown name="CSK_PersistentData">
-            <desc>no description yet</desc>
-            <uses>
-                <event name="OnInitialDataLoaded"/>
-                <function name="getParameter"/>
-                <function name="setModuleParameterName"/>
-                <function name="addParameter"/>
-                <function name="saveData"/>
-                <function name="getModuleParameterName"/>
-                <function name="getVersion"/>
-            </uses>
-        </crown>
-        <crown name="Log">
-            <desc>no description yet</desc>
-            <uses/>
-            <crown name="Handler">
-                <desc>no description yet</desc>
-                <uses>
-                    <function name="create"/>
-                </uses>
-            </crown>
-            <crown name="SharedLogger">
-                <desc>no description yet</desc>
-                <uses>
-                    <function name="create"/>
-                </uses>
-            </crown>
-        </crown>
-        <crown name="Container">
-            <desc>no description yet</desc>
-            <uses>
-                <function name="get"/>
-                <function name="create"/>
-                <function name="list"/>
-                <function name="add"/>
-            </uses>
-        </crown>
-        <crown name="table">
-            <desc>no description yet</desc>
-            <uses>
-                <function name="remove"/>
-                <function name="insert"/>
-                <function name="sort"/>
-                <function name="concat"/>
-            </uses>
-        </crown>
-        <crown name="Script">
-            <desc>no description yet</desc>
-            <uses>
-                <function name="getStartArgument"/>
-                <function name="deregister"/>
-                <function name="serveFunction"/>
-                <function name="releaseObject"/>
-                <function name="notifyEvent"/>
-                <function name="startScript"/>
-                <function name="register"/>
-                <function name="serveEvent"/>
-            </uses>
-        </crown>
-        <crown name="string">
-            <desc>no description yet</desc>
-            <uses>
-                <function name="char"/>
-                <function name="sub"/>
-                <function name="format"/>
-            </uses>
-        </crown>
-        <crown name="Object">
-            <desc>no description yet</desc>
-            <uses>
-                <function name="getType"/>
-            </uses>
-        </crown>
-        <crown name="DateTime">
-            <desc>no description yet</desc>
-            <uses>
-                <function name="getTime"/>
-            </uses>
-        </crown>
         <crown name="MultiSerialCom_FC">
             <trait>released</trait>
             <desc>Crown to provide CSK_FlowConfig relevant features.</desc>
@@ -542,7 +420,7 @@ Needs then to be called via "Script.callFunction".</desc>
                     <event name="OnNewData">
                         <include>data-flow</include>
                         <desc>Provide received serial data.</desc>
-                        <param desc="Handle to internally used FlowConfig instance." multiplicity="1" name="handle" type="binary"/>
+                        <param desc="Handle to internally used FlowConfig instance." multiplicity="1" name="handle" type="handle"/>
                         <param desc="'CSK_MultiSerialCom.OnNewData[InstanceNUM]'&#10;&#10;Parameter:&#10;1: Data (BINARY)" multiplicity="1" name="OnNewData" ref="CSK_MultiColorSelection_FC.ResultType" type="string"/>
                     </event>
                     <function name="create">
@@ -563,7 +441,7 @@ Needs then to be called via "Script.callFunction".</desc>
             </crown>
         </crown>
         <meta key="author">SICK AG</meta>
-        <meta key="version">2.0.0</meta>
+        <meta key="version">2.0.1</meta>
         <meta key="priority">low</meta>
         <meta key="copy-protected">false</meta>
         <meta key="read-protected">false</meta>
