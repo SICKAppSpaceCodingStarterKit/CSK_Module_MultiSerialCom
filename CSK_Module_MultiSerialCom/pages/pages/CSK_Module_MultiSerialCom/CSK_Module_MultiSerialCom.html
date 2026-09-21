@@ -10,9 +10,8 @@
                         Serial Com
                     </h1>
                     <davinci-value-display id="VD_Version">
-						<crown-on property="value"
-							crown-event="CSK_MultiSerialCom/OnNewStatusModuleVersion">
-						</crown-on>
+                        <crown-on property="value" crown-event="CSK_MultiSerialCom/OnNewStatusModuleVersion">
+                        </crown-on>
                     </davinci-value-display>
                 </layout-row>
             </layout-column>
@@ -36,19 +35,20 @@
                                             </layout-column>
                                             <layout-column id="ColumnLayout561" style="align-items: stretch">
                                                 <davinci-drop-down id="DD_SelectInstance">
-                                                    <crown-binding event="change"
-                                                        name="CSK_MultiSerialCom/setSelectedInstance"
-                                                        path="param/args/instance" auto-commit
-                                                        converter="function(value) {return Number(value);}">
-                                                    </crown-binding>
-                                                    <crown-edpws-binding property="value"
-                                                        name="CSK_MultiSerialCom/OnNewSelectedInstance" update-on-resume
+                                                    <crown-set event="change"
+                                                        crown-function="CSK_MultiSerialCom/setSelectedInstance"
+                                                        protocol="crownMSGPACK"
+                                                        converter="function(value) {return Number(value);}"
+                                                        crown-path="instance">
+                                                    </crown-set>
+                                                    <crown-on property="value"
+                                                        crown-event="CSK_MultiSerialCom/OnNewSelectedInstance"
                                                         converter="function(value) {return value.toString();}">
-                                                    </crown-edpws-binding>
-                                                    <crown-edpws-binding property="data"
-                                                        name="CSK_MultiSerialCom/OnNewInstanceList" update-on-resume
+                                                    </crown-on>
+                                                    <crown-on property="data"
+                                                        crown-event="CSK_MultiSerialCom/OnNewInstanceList"
                                                         converter="convertToList">
-                                                    </crown-edpws-binding>
+                                                    </crown-on>
                                                 </davinci-drop-down>
                                             </layout-column>
                                             <layout-column id="ColumnLayout471" style="align-items: stretch">
@@ -60,18 +60,20 @@
                                                         title="Add instance">
                                                         <davinci-icon icon="content/add"></davinci-icon>
                                                         <span></span>
-                                                        <crown-binding event="submit"
-                                                            name="CSK_MultiSerialCom/addInstance" auto-commit>
-                                                        </crown-binding>
+                                                        <crown-set event="submit"
+                                                            crown-function="CSK_MultiSerialCom/addInstance"
+                                                            protocol="crownMSGPACK">
+                                                        </crown-set>
                                                     </davinci-button>
                                                     <davinci-button id="Button_ResetInstances"
                                                         class="myCustomButton_CSK_Module_MultiSerialCom" type="outline"
                                                         title="Reset insances to single instance. Reload app after resetting.">
                                                         <davinci-icon icon="action/delete"></davinci-icon>
                                                         <span></span>
-                                                        <crown-binding event="submit"
-                                                            name="CSK_MultiSerialCom/resetInstances" auto-commit>
-                                                        </crown-binding>
+                                                        <crown-set event="submit"
+                                                            crown-function="CSK_MultiSerialCom/resetInstances"
+                                                            protocol="crownMSGPACK">
+                                                        </crown-set>
                                                     </davinci-button>
                                                 </layout-row>
                                             </layout-column>
@@ -92,17 +94,17 @@
                                                 style="align-items: stretch; flex-grow: 2">
                                                 <davinci-text-field id="TF_ParameterName" type="text"
                                                     title="Name of the parameters within the CSK_PersistentData module to be uses for this module.">
-                                                    <crown-edpws-binding property="value"
-                                                        name="CSK_MultiSerialCom/OnNewParameterName" update-on-resume>
-                                                    </crown-edpws-binding>
-                                                    <crown-binding event="change"
-                                                        name="CSK_MultiSerialCom/setParameterName"
-                                                        path="param/args/name" auto-commit>
-                                                    </crown-binding>
-                                                    <crown-edpws-binding property="disabled"
-                                                        name="CSK_MultiSerialCom/OnPersistentDataModuleAvailable"
-                                                        update-on-resume converter="function(value) {return !value;}">
-                                                    </crown-edpws-binding>
+                                                    <crown-on property="value"
+                                                        crown-event="CSK_MultiSerialCom/OnNewParameterName">
+                                                    </crown-on>
+                                                    <crown-set event="change"
+                                                        crown-function="CSK_MultiSerialCom/setParameterName"
+                                                        protocol="crownMSGPACK" crown-path="name">
+                                                    </crown-set>
+                                                    <crown-on property="disabled"
+                                                        crown-event="CSK_MultiSerialCom/OnPersistentDataModuleAvailable"
+                                                        converter="function(value) {return !value;}">
+                                                    </crown-on>
                                                 </davinci-text-field>
                                             </layout-column>
                                             <layout-column id="Column_PersistentData" style="align-items: stretch">
@@ -117,15 +119,14 @@
                                                                 title="Load configured parameters from CSK_PersistentData module.">
                                                                 <davinci-icon icon="action/history"></davinci-icon>
                                                                 <span></span>
-                                                                <crown-binding event="submit"
-                                                                    name="CSK_MultiSerialCom/loadParameters"
-                                                                    auto-commit>
-                                                                </crown-binding>
-                                                                <crown-edpws-binding property="disabled"
-                                                                    name="CSK_MultiSerialCom/OnPersistentDataModuleAvailable"
-                                                                    update-on-resume
+                                                                <crown-set event="submit"
+                                                                    crown-function="CSK_MultiSerialCom/loadParameters"
+                                                                    protocol="crownMSGPACK">
+                                                                </crown-set>
+                                                                <crown-on property="disabled"
+                                                                    crown-event="CSK_MultiSerialCom/OnPersistentDataModuleAvailable"
                                                                     converter="function(value) {return !value;}">
-                                                                </crown-edpws-binding>
+                                                                </crown-on>
                                                             </davinci-button>
                                                             <davinci-button id="B_SaveConfig"
                                                                 class="myCustomButton_CSK_Module_MultiSerialCom"
@@ -133,15 +134,14 @@
                                                                 title="Save the currently configured parameters of this module within CSK_PersistentData module.">
                                                                 <davinci-icon icon="content/save"></davinci-icon>
                                                                 <span></span>
-                                                                <crown-binding event="submit"
-                                                                    name="CSK_MultiSerialCom/sendParameters"
-                                                                    auto-commit>
-                                                                </crown-binding>
-                                                                <crown-edpws-binding property="disabled"
-                                                                    name="CSK_MultiSerialCom/OnPersistentDataModuleAvailable"
-                                                                    update-on-resume
+                                                                <crown-set event="submit"
+                                                                    crown-function="CSK_MultiSerialCom/sendParameters"
+                                                                    protocol="crownMSGPACK">
+                                                                </crown-set>
+                                                                <crown-on property="disabled"
+                                                                    crown-event="CSK_MultiSerialCom/OnPersistentDataModuleAvailable"
                                                                     converter="function(value) {return !value;}">
-                                                                </crown-edpws-binding>
+                                                                </crown-on>
                                                             </davinci-button>
                                                         </layout-row>
                                                     </layout-column>
@@ -173,19 +173,18 @@
                                                                         <davinci-checkbox id="CB_LoadConfig"
                                                                             title="Load configured parameters from CSK_PersistentData on app start.">
                                                                             <span></span>
-                                                                            <crown-edpws-binding property="checked"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusLoadParameterOnReboot"
-                                                                                update-on-resume>
-                                                                            </crown-edpws-binding>
-                                                                            <crown-edpws-binding property="disabled"
-                                                                                name="CSK_MultiSerialCom/OnPersistentDataModuleAvailable"
-                                                                                update-on-resume
+                                                                            <crown-on property="checked"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusLoadParameterOnReboot">
+                                                                            </crown-on>
+                                                                            <crown-on property="disabled"
+                                                                                crown-event="CSK_MultiSerialCom/OnPersistentDataModuleAvailable"
                                                                                 converter="function(value) {return !value;}">
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setLoadOnReboot"
-                                                                                path="param/args/status" auto-commit>
-                                                                            </crown-binding>
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setLoadOnReboot"
+                                                                                protocol="crownMSGPACK"
+                                                                                crown-path="status">
+                                                                            </crown-set>
                                                                         </davinci-checkbox>
                                                                     </layout-row>
                                                                 </layout-column>
@@ -200,14 +199,14 @@
                                                                         <davinci-checkbox id="CB_FlowConfigPrio"
                                                                             title="FlowConfig priority for FlowConfig relevant configurations.">
                                                                             <span></span>
-                                                                            <crown-edpws-binding property="checked"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusFlowConfigPriority"
-                                                                                update-on-resume>
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setFlowConfigPriority"
-                                                                                path="param/args/status" auto-commit>
-                                                                            </crown-binding>
+                                                                            <crown-on property="checked"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusFlowConfigPriority">
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setFlowConfigPriority"
+                                                                                protocol="crownMSGPACK"
+                                                                                crown-path="status">
+                                                                            </crown-set>
                                                                         </davinci-checkbox>
                                                                     </layout-row>
                                                                 </layout-column>
@@ -239,12 +238,12 @@
                                     <davinci-value-display id="VD_ShowLog" value="Show log:">
                                     </davinci-value-display>
                                     <davinci-toggle-switch id="TS_ShowLog">
-                                        <crown-edpws-binding property="checked"
-                                            name="CSK_MultiSerialCom/OnNewStatusShowLog" update-on-resume>
-                                        </crown-edpws-binding>
-                                        <crown-binding event="change" name="CSK_MultiSerialCom/setShowLog"
-                                            path="param/args/status" auto-commit>
-                                        </crown-binding>
+                                        <crown-on property="checked"
+                                            crown-event="CSK_MultiSerialCom/OnNewStatusShowLog">
+                                        </crown-on>
+                                        <crown-set event="change" crown-function="CSK_MultiSerialCom/setShowLog"
+                                            protocol="crownMSGPACK" crown-path="status">
+                                        </crown-set>
                                     </davinci-toggle-switch>
                                 </layout-row>
                                 <davinci-value-display id="VD_Log" label="Communication history">
@@ -256,12 +255,13 @@
                                 <layout-row id="RowLayout26" style="align-items: center">
                                     <layout-column id="ColumnLayout42" style="align-items: stretch; flex-grow: 5">
                                         <davinci-text-field id="TF_DataToTransmit" type="text" label="Data to transmit">
-                                            <crown-edpws-binding property="value"
-                                                name="CSK_MultiSerialCom/OnNewStatusTempDataToSend" update-on-resume>
-                                            </crown-edpws-binding>
-                                            <crown-binding event="change" name="CSK_MultiSerialCom/setTempDataToSend"
-                                                path="param/args/data" auto-commit>
-                                            </crown-binding>
+                                            <crown-on property="value"
+                                                crown-event="CSK_MultiSerialCom/OnNewStatusTempDataToSend">
+                                            </crown-on>
+                                            <crown-set event="change"
+                                                crown-function="CSK_MultiSerialCom/setTempDataToSend"
+                                                protocol="crownMSGPACK" crown-path="data">
+                                            </crown-set>
                                         </davinci-text-field>
                                     </layout-column>
                                     <layout-column id="ColumnLayout43" style="align-items: flex-end">
@@ -271,18 +271,19 @@
                                                 title="Transmit the configured content via the serial connection.">
                                                 <davinci-icon icon="content/send"></davinci-icon>
                                                 <span></span>
-                                                <crown-binding event="submit"
-                                                    name="CSK_MultiSerialCom/transmitDataViaUI" auto-commit>
-                                                </crown-binding>
+                                                <crown-set event="submit"
+                                                    crown-function="CSK_MultiSerialCom/transmitDataViaUI"
+                                                    protocol="crownMSGPACK">
+                                                </crown-set>
                                             </davinci-button>
                                             <davinci-button id="Button_Receive"
                                                 class="myCustomButton_CSK_Module_MultiSerialCom" type="outline"
                                                 title="Receives data from the client with a specified timeout.">
                                                 <davinci-icon icon="communication/call_received"></davinci-icon>
                                                 <span></span>
-                                                <crown-binding event="submit" name="CSK_MultiSerialCom/receive"
-                                                    auto-commit>
-                                                </crown-binding>
+                                                <crown-set event="submit" crown-function="CSK_MultiSerialCom/receive"
+                                                    protocol="crownMSGPACK">
+                                                </crown-set>
                                             </davinci-button>
                                         </layout-row>
                                     </layout-column>
@@ -319,22 +320,20 @@
                                                                             <davinci-status-indicator
                                                                                 id="SI_ConnectionStatus">
                                                                                 <span></span>
-                                                                                <crown-edpws-binding property="status"
-                                                                                    name="CSK_MultiSerialCom/OnNewStatusConnected"
-                                                                                    update-on-resume>
-                                                                                </crown-edpws-binding>
+                                                                                <crown-on property="status"
+                                                                                    crown-event="CSK_MultiSerialCom/OnNewStatusConnected">
+                                                                                </crown-on>
                                                                             </davinci-status-indicator>
                                                                             <davinci-toggle-switch id="TS_Active"
                                                                                 class="myCustomMargin_CSK_Module_MultiSerialCom">
-                                                                                <crown-edpws-binding property="checked"
-                                                                                    name="CSK_MultiSerialCom/OnNewStatusCommunicationActive"
-                                                                                    update-on-resume>
-                                                                                </crown-edpws-binding>
-                                                                                <crown-binding event="change"
-                                                                                    name="CSK_MultiSerialCom/setActive"
-                                                                                    path="param/args/status"
-                                                                                    auto-commit>
-                                                                                </crown-binding>
+                                                                                <crown-on property="checked"
+                                                                                    crown-event="CSK_MultiSerialCom/OnNewStatusCommunicationActive">
+                                                                                </crown-on>
+                                                                                <crown-set event="change"
+                                                                                    crown-function="CSK_MultiSerialCom/setActive"
+                                                                                    protocol="crownMSGPACK"
+                                                                                    crown-path="status">
+                                                                                </crown-set>
                                                                             </davinci-toggle-switch>
                                                                         </layout-row>
                                                                     </layout-column>
@@ -350,19 +349,18 @@
                                                                     <layout-column id="ColumnLayout13"
                                                                         style="align-items: stretch">
                                                                         <davinci-drop-down id="DD_Interface">
-                                                                            <crown-edpws-binding property="data"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusAvailableInterfaces"
-                                                                                update-on-resume
+                                                                            <crown-on property="data"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusAvailableInterfaces"
                                                                                 converter="convertToList">
-                                                                            </crown-edpws-binding>
-                                                                            <crown-edpws-binding property="value"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusInterface"
-                                                                                update-on-resume>
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setInterface"
-                                                                                path="param/args/interface" auto-commit>
-                                                                            </crown-binding>
+                                                                            </crown-on>
+                                                                            <crown-on property="value"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusInterface">
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setInterface"
+                                                                                protocol="crownMSGPACK"
+                                                                                crown-path="interface">
+                                                                            </crown-set>
                                                                         </davinci-drop-down>
                                                                     </layout-column>
                                                                 </layout-row>
@@ -386,14 +384,14 @@
                                                                             <davinci-option id="Option13" value="RS485">
                                                                                 <span>RS485</span>
                                                                             </davinci-option>
-                                                                            <crown-edpws-binding property="value"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusType"
-                                                                                update-on-resume>
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setType"
-                                                                                path="param/args/comType" auto-commit>
-                                                                            </crown-binding>
+                                                                            <crown-on property="value"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusType">
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setType"
+                                                                                protocol="crownMSGPACK"
+                                                                                crown-path="comType">
+                                                                            </crown-set>
                                                                         </davinci-drop-down>
                                                                     </layout-column>
                                                                 </layout-row>
@@ -439,16 +437,16 @@
                                                                                 value="115200">
                                                                                 <span>115200</span>
                                                                             </davinci-option>
-                                                                            <crown-edpws-binding property="value"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusBaudrate"
-                                                                                update-on-resume
+                                                                            <crown-on property="value"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusBaudrate"
                                                                                 converter="function(value) {return Number(value);}">
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setBaudrate"
-                                                                                path="param/args/baudrate" auto-commit
-                                                                                converter="function(value) {return Number(value);}">
-                                                                            </crown-binding>
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setBaudrate"
+                                                                                protocol="crownMSGPACK"
+                                                                                converter="function(value) {return Number(value);}"
+                                                                                crown-path="baudrate">
+                                                                            </crown-set>
                                                                         </davinci-drop-down>
                                                                     </layout-column>
                                                                 </layout-row>
@@ -478,14 +476,14 @@
                                                                             <davinci-option id="Option5" value="S">
                                                                                 <span>S [Space]</span>
                                                                             </davinci-option>
-                                                                            <crown-edpws-binding property="value"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusParity"
-                                                                                update-on-resume>
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setParity"
-                                                                                path="param/args/mode" auto-commit>
-                                                                            </crown-binding>
+                                                                            <crown-on property="value"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusParity">
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setParity"
+                                                                                protocol="crownMSGPACK"
+                                                                                crown-path="mode">
+                                                                            </crown-set>
                                                                         </davinci-drop-down>
                                                                     </layout-column>
                                                                 </layout-row>
@@ -502,15 +500,14 @@
                                                                             style="justify-content: flex-end">
                                                                             <davinci-toggle-switch id="TS_Handshake"
                                                                                 class="myCustomMargin_CSK_Module_MultiSerialCom">
-                                                                                <crown-edpws-binding property="checked"
-                                                                                    name="CSK_MultiSerialCom/OnNewStatusHandshake"
-                                                                                    update-on-resume>
-                                                                                </crown-edpws-binding>
-                                                                                <crown-binding event="change"
-                                                                                    name="CSK_MultiSerialCom/setHandshake"
-                                                                                    path="param/args/status"
-                                                                                    auto-commit>
-                                                                                </crown-binding>
+                                                                                <crown-on property="checked"
+                                                                                    crown-event="CSK_MultiSerialCom/OnNewStatusHandshake">
+                                                                                </crown-on>
+                                                                                <crown-set event="change"
+                                                                                    crown-function="CSK_MultiSerialCom/setHandshake"
+                                                                                    protocol="crownMSGPACK"
+                                                                                    crown-path="status">
+                                                                                </crown-set>
                                                                             </davinci-toggle-switch>
                                                                         </layout-row>
                                                                     </layout-column>
@@ -532,16 +529,16 @@
                                                                             <davinci-option id="Option7" value="7">
                                                                                 <span>7</span>
                                                                             </davinci-option>
-                                                                            <crown-edpws-binding property="value"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusDataBits"
-                                                                                update-on-resume
+                                                                            <crown-on property="value"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusDataBits"
                                                                                 converter="function(value) {return Number(value);}">
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setDataBits"
-                                                                                path="param/args/bits" auto-commit
-                                                                                converter="function(value) {return Number(value);}">
-                                                                            </crown-binding>
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setDataBits"
+                                                                                protocol="crownMSGPACK"
+                                                                                converter="function(value) {return Number(value);}"
+                                                                                crown-path="bits">
+                                                                            </crown-set>
                                                                         </davinci-drop-down>
                                                                     </layout-column>
                                                                 </layout-row>
@@ -562,16 +559,16 @@
                                                                             <davinci-option id="Option9" value="2">
                                                                                 <span>2</span>
                                                                             </davinci-option>
-                                                                            <crown-edpws-binding property="value"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusStopBits"
-                                                                                update-on-resume
+                                                                            <crown-on property="value"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusStopBits"
                                                                                 converter="function(value) {return Number(value);}">
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setStopBits"
-                                                                                path="param/args/bits" auto-commit
-                                                                                converter="function(value) {return Number(value);}">
-                                                                            </crown-binding>
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setStopBits"
+                                                                                protocol="crownMSGPACK"
+                                                                                converter="function(value) {return Number(value);}"
+                                                                                crown-path="bits">
+                                                                            </crown-set>
                                                                         </davinci-drop-down>
                                                                     </layout-column>
                                                                 </layout-row>
@@ -589,15 +586,14 @@
                                                                             style="justify-content: flex-end">
                                                                             <davinci-toggle-switch id="TS_FlowControl"
                                                                                 class="myCustomMargin_CSK_Module_MultiSerialCom">
-                                                                                <crown-edpws-binding property="checked"
-                                                                                    name="CSK_MultiSerialCom/OnNewStatusFlowControl"
-                                                                                    update-on-resume>
-                                                                                </crown-edpws-binding>
-                                                                                <crown-binding event="change"
-                                                                                    name="CSK_MultiSerialCom/setFlowControl"
-                                                                                    path="param/args/status"
-                                                                                    auto-commit>
-                                                                                </crown-binding>
+                                                                                <crown-on property="checked"
+                                                                                    crown-event="CSK_MultiSerialCom/OnNewStatusFlowControl">
+                                                                                </crown-on>
+                                                                                <crown-set event="change"
+                                                                                    crown-function="CSK_MultiSerialCom/setFlowControl"
+                                                                                    protocol="crownMSGPACK"
+                                                                                    crown-path="status">
+                                                                                </crown-set>
                                                                             </davinci-toggle-switch>
                                                                         </layout-row>
                                                                     </layout-column>
@@ -615,15 +611,14 @@
                                                                             style="justify-content: flex-end">
                                                                             <davinci-toggle-switch id="TS_Termination"
                                                                                 class="myCustomMargin_CSK_Module_MultiSerialCom">
-                                                                                <crown-edpws-binding property="checked"
-                                                                                    name="CSK_MultiSerialCom/OnNewStatusTermination"
-                                                                                    update-on-resume>
-                                                                                </crown-edpws-binding>
-                                                                                <crown-binding event="change"
-                                                                                    name="CSK_MultiSerialCom/setTermination"
-                                                                                    path="param/args/status"
-                                                                                    auto-commit>
-                                                                                </crown-binding>
+                                                                                <crown-on property="checked"
+                                                                                    crown-event="CSK_MultiSerialCom/OnNewStatusTermination">
+                                                                                </crown-on>
+                                                                                <crown-set event="change"
+                                                                                    crown-function="CSK_MultiSerialCom/setTermination"
+                                                                                    protocol="crownMSGPACK"
+                                                                                    crown-path="status">
+                                                                                </crown-set>
                                                                             </davinci-toggle-switch>
                                                                         </layout-row>
                                                                     </layout-column>
@@ -668,14 +663,14 @@
                                                                                 value="CR_LF">
                                                                                 <span>CR LF</span>
                                                                             </davinci-option>
-                                                                            <crown-edpws-binding property="value"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusFrameRxStart"
-                                                                                update-on-resume>
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setFramingRxStart"
-                                                                                path="param/args/frame" auto-commit>
-                                                                            </crown-binding>
+                                                                            <crown-on property="value"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusFrameRxStart">
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setFramingRxStart"
+                                                                                protocol="crownMSGPACK"
+                                                                                crown-path="frame">
+                                                                            </crown-set>
                                                                         </davinci-drop-down>
                                                                         <davinci-drop-down id="DD_RxStop"
                                                                             label="RxStop">
@@ -701,14 +696,14 @@
                                                                                 value="CR_LF">
                                                                                 <span>CR LF</span>
                                                                             </davinci-option>
-                                                                            <crown-edpws-binding property="value"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusFrameRxStop"
-                                                                                update-on-resume>
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setFramingRxStop"
-                                                                                path="param/args/frame" auto-commit>
-                                                                            </crown-binding>
+                                                                            <crown-on property="value"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusFrameRxStop">
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setFramingRxStop"
+                                                                                protocol="crownMSGPACK"
+                                                                                crown-path="frame">
+                                                                            </crown-set>
                                                                         </davinci-drop-down>
                                                                     </layout-column>
                                                                     <layout-column id="ColumnLayout48"
@@ -737,14 +732,14 @@
                                                                                 value="CR_LF">
                                                                                 <span>CR LF</span>
                                                                             </davinci-option>
-                                                                            <crown-edpws-binding property="value"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusFrameTxStart"
-                                                                                update-on-resume>
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setFramingTxStart"
-                                                                                path="param/args/frame" auto-commit>
-                                                                            </crown-binding>
+                                                                            <crown-on property="value"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusFrameTxStart">
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setFramingTxStart"
+                                                                                protocol="crownMSGPACK"
+                                                                                crown-path="frame">
+                                                                            </crown-set>
                                                                         </davinci-drop-down>
                                                                         <davinci-drop-down id="DD_TxStop"
                                                                             label="TxStop">
@@ -770,14 +765,14 @@
                                                                                 value="CR_LF">
                                                                                 <span>CR LF</span>
                                                                             </davinci-option>
-                                                                            <crown-edpws-binding property="value"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusFrameTxStop"
-                                                                                update-on-resume>
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setFramingTxStop"
-                                                                                path="param/args/frame" auto-commit>
-                                                                            </crown-binding>
+                                                                            <crown-on property="value"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusFrameTxStop">
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setFramingTxStop"
+                                                                                protocol="crownMSGPACK"
+                                                                                crown-path="frame">
+                                                                            </crown-set>
                                                                         </davinci-drop-down>
                                                                     </layout-column>
                                                                 </layout-row>
@@ -800,16 +795,14 @@
                                                                                     ticks="1" group-separator=","
                                                                                     decimal-separator="."
                                                                                     format-pattern="0">
-                                                                                    <crown-edpws-binding
-                                                                                        property="value"
-                                                                                        name="CSK_MultiSerialCom/OnNewStatusBufferSizeRx"
-                                                                                        update-on-resume>
-                                                                                    </crown-edpws-binding>
-                                                                                    <crown-binding event="change"
-                                                                                        name="CSK_MultiSerialCom/setFramingBufferSizeRx"
-                                                                                        path="param/args/size"
-                                                                                        auto-commit>
-                                                                                    </crown-binding>
+                                                                                    <crown-on property="value"
+                                                                                        crown-event="CSK_MultiSerialCom/OnNewStatusBufferSizeRx">
+                                                                                    </crown-on>
+                                                                                    <crown-set event="change"
+                                                                                        crown-function="CSK_MultiSerialCom/setFramingBufferSizeRx"
+                                                                                        protocol="crownMSGPACK"
+                                                                                        crown-path="size">
+                                                                                    </crown-set>
                                                                                 </davinci-numeric-field>
                                                                             </layout-column>
                                                                             <layout-column id="ColumnLayout51"
@@ -824,16 +817,14 @@
                                                                                     ticks="1" group-separator=","
                                                                                     decimal-separator="."
                                                                                     format-pattern="0">
-                                                                                    <crown-edpws-binding
-                                                                                        property="value"
-                                                                                        name="CSK_MultiSerialCom/OnNewStatusBufferSizeTx"
-                                                                                        update-on-resume>
-                                                                                    </crown-edpws-binding>
-                                                                                    <crown-binding event="change"
-                                                                                        name="CSK_MultiSerialCom/setFramingBufferSizeTx"
-                                                                                        path="param/args/size"
-                                                                                        auto-commit>
-                                                                                    </crown-binding>
+                                                                                    <crown-on property="value"
+                                                                                        crown-event="CSK_MultiSerialCom/OnNewStatusBufferSizeTx">
+                                                                                    </crown-on>
+                                                                                    <crown-set event="change"
+                                                                                        crown-function="CSK_MultiSerialCom/setFramingBufferSizeTx"
+                                                                                        protocol="crownMSGPACK"
+                                                                                        crown-path="size">
+                                                                                    </crown-set>
                                                                                 </davinci-numeric-field>
                                                                             </layout-column>
                                                                         </layout-row>
@@ -867,14 +858,14 @@
                                                                             type="outline" min="0" max="10000" ticks="1"
                                                                             group-separator="," decimal-separator="."
                                                                             format-pattern="0">
-                                                                            <crown-edpws-binding property="value"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusReceiveTimeout"
-                                                                                update-on-resume>
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setReceiveTimeout"
-                                                                                path="param/args/time" auto-commit>
-                                                                            </crown-binding>
+                                                                            <crown-on property="value"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusReceiveTimeout">
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setReceiveTimeout"
+                                                                                protocol="crownMSGPACK"
+                                                                                crown-path="time">
+                                                                            </crown-set>
                                                                         </davinci-numeric-field>
                                                                     </layout-column>
                                                                 </layout-row>
@@ -892,14 +883,14 @@
                                                                             type="outline" min="0" max="100" ticks="1"
                                                                             group-separator="," decimal-separator="."
                                                                             format-pattern="0">
-                                                                            <crown-edpws-binding property="value"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusReceiveQueueSize"
-                                                                                update-on-resume>
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setReceiveQueueSize"
-                                                                                path="param/args/size" auto-commit>
-                                                                            </crown-binding>
+                                                                            <crown-on property="value"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusReceiveQueueSize">
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setReceiveQueueSize"
+                                                                                protocol="crownMSGPACK"
+                                                                                crown-path="size">
+                                                                            </crown-set>
                                                                         </davinci-numeric-field>
                                                                     </layout-column>
                                                                 </layout-row>
@@ -917,15 +908,14 @@
                                                                             style="justify-content: flex-end">
                                                                             <davinci-toggle-switch id="TS_DiscardFull"
                                                                                 class="myCustomMargin_CSK_Module_MultiSerialCom">
-                                                                                <crown-edpws-binding property="checked"
-                                                                                    name="CSK_MultiSerialCom/OnNewStatusDiscardIfFull"
-                                                                                    update-on-resume>
-                                                                                </crown-edpws-binding>
-                                                                                <crown-binding event="change"
-                                                                                    name="CSK_MultiSerialCom/setDiscardIfFull"
-                                                                                    path="param/args/status"
-                                                                                    auto-commit>
-                                                                                </crown-binding>
+                                                                                <crown-on property="checked"
+                                                                                    crown-event="CSK_MultiSerialCom/OnNewStatusDiscardIfFull">
+                                                                                </crown-on>
+                                                                                <crown-set event="change"
+                                                                                    crown-function="CSK_MultiSerialCom/setDiscardIfFull"
+                                                                                    protocol="crownMSGPACK"
+                                                                                    crown-path="status">
+                                                                                </crown-set>
                                                                             </davinci-toggle-switch>
                                                                         </layout-row>
                                                                     </layout-column>
@@ -943,15 +933,14 @@
                                                                             style="justify-content: flex-end">
                                                                             <davinci-toggle-switch id="TS_WarnOverruns"
                                                                                 class="myCustomMargin_CSK_Module_MultiSerialCom">
-                                                                                <crown-edpws-binding property="checked"
-                                                                                    name="CSK_MultiSerialCom/OnNewStatusWarnOverruns"
-                                                                                    update-on-resume>
-                                                                                </crown-edpws-binding>
-                                                                                <crown-binding event="change"
-                                                                                    name="CSK_MultiSerialCom/setWarnOnOverruns"
-                                                                                    path="param/args/status"
-                                                                                    auto-commit>
-                                                                                </crown-binding>
+                                                                                <crown-on property="checked"
+                                                                                    crown-event="CSK_MultiSerialCom/OnNewStatusWarnOverruns">
+                                                                                </crown-on>
+                                                                                <crown-set event="change"
+                                                                                    crown-function="CSK_MultiSerialCom/setWarnOnOverruns"
+                                                                                    protocol="crownMSGPACK"
+                                                                                    crown-path="status">
+                                                                                </crown-set>
                                                                             </davinci-toggle-switch>
                                                                         </layout-row>
                                                                     </layout-column>
@@ -972,11 +961,10 @@
                                                                 </davinci-value-display>
                                                                 <curie-callout id="DC_FlowConfigInfo1" type="info"
                                                                     value="FlowConfig priority active.">
-                                                                    <crown-edpws-binding property="hidden"
-                                                                        name="CSK_MultiSerialCom/OnNewStatusFlowConfigPriority"
-                                                                        update-on-resume
+                                                                    <crown-on property="hidden"
+                                                                        crown-event="CSK_MultiSerialCom/OnNewStatusFlowConfigPriority"
                                                                         converter="function(value) {return !value;}">
-                                                                    </crown-edpws-binding>
+                                                                    </crown-on>
                                                                 </curie-callout>
                                                                 <layout-row id="RowLayout10"
                                                                     style="align-items: center">
@@ -991,18 +979,17 @@
                                                                         <davinci-text-field id="TF_RegisteredEvent"
                                                                             type="text"
                                                                             placeholder="e.g. CSK_OtherModule.PushData">
-                                                                            <crown-edpws-binding property="value"
-                                                                                name="CSK_MultiSerialCom/OnNewStatusRegisteredEvent"
-                                                                                update-on-resume>
-                                                                            </crown-edpws-binding>
-                                                                            <crown-binding event="change"
-                                                                                name="CSK_MultiSerialCom/setRegisterEvent"
-                                                                                path="param/args/event" auto-commit>
-                                                                            </crown-binding>
-												<crown-edpws-binding property="disabled"
-													name="CSK_MultiSerialCom/OnNewStatusFlowConfigPriority"
-													update-on-resume>
-												</crown-edpws-binding>
+                                                                            <crown-on property="value"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusRegisteredEvent">
+                                                                            </crown-on>
+                                                                            <crown-set event="change"
+                                                                                crown-function="CSK_MultiSerialCom/setRegisterEvent"
+                                                                                protocol="crownMSGPACK"
+                                                                                crown-path="event">
+                                                                            </crown-set>
+                                                                            <crown-on property="disabled"
+                                                                                crown-event="CSK_MultiSerialCom/OnNewStatusFlowConfigPriority">
+                                                                            </crown-on>
                                                                         </davinci-text-field>
                                                                     </layout-column>
                                                                 </layout-row>
@@ -1020,10 +1007,10 @@
                                             </davinci-callout>
                                         </layout-row>
                                     </stacked-pane>
-                                    <crown-edpws-binding property="value"
-                                        name="CSK_MultiSerialCom/OnUserLevelOperatorActive" update-on-resume
+                                    <crown-on property="value"
+                                        crown-event="CSK_MultiSerialCom/OnUserLevelOperatorActive"
                                         converter="function(value) {return value.toString();}">
-                                    </crown-edpws-binding>
+                                    </crown-on>
                                 </stacked-view>
                             </layout-column>
                         </layout-row>
@@ -1036,21 +1023,20 @@
 						Module is not supported on this device or no interface available.
 					</span>
                 </davinci-callout>
-				<img id="UI_sample"
+                <img id="UI_sample"
 					src="assets/CSK_Module_MultiSerialCom/UI_sample.png"
 					alt="UI sample">
             </stacked-pane>
-            <crown-edpws-binding property="value" name="CSK_MultiSerialCom/OnNewStatusModuleIsActive" update-on-resume
+            <crown-on property="value" crown-event="CSK_MultiSerialCom/OnNewStatusModuleIsActive"
                 converter="function(value) {return value.toString();}">
-            </crown-edpws-binding>
+            </crown-on>
         </stacked-view>
         <stacked-view id="SV_PageCalled">
-            <crown-binding property="value" name="CSK_MultiSerialCom/pageCalled" path="result/data/empty"
-                auto-update="0" update-on-resume>
-            </crown-binding>
-            <crown-edpws-binding property="value" name="CSK_MultiSerialCom/OnNewStatusCSKStyle" update-on-resume
-                converter="changeStyle">
-            </crown-edpws-binding>
+            <crown-get property="value" crown-function="CSK_MultiSerialCom/pageCalled" protocol="crownMSGPACK"
+                crown-path="empty" auto-update-ms="0">
+            </crown-get>
+            <crown-on property="value" crown-event="CSK_MultiSerialCom/OnNewStatusCSKStyle" converter="changeStyle">
+            </crown-on>
         </stacked-view>
     </layout-column>
 </layout-row>
